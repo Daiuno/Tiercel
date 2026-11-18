@@ -29,11 +29,20 @@ import Foundation
 extension FileManager: TiercelCompatible {}
 extension TiercelWrapper where Base: FileManager {
     public var freeDiskSpaceInBytes: Int64 {
-        if let space = try? URL(fileURLWithPath: NSHomeDirectory()).resourceValues(forKeys: [URLResourceKey.volumeAvailableCapacityForImportantUsageKey]).volumeAvailableCapacityForImportantUsage {
-            return space
-        } else {
-            return 0
-        }
+        // volumeAvailableCapacityForImportantUsage is iOS only; the plain capacity key exists on tvOS too.
+        let key: URLResourceKey = {
+#if os(tvOS)
+            return .volumeAvailableCapacityKey
+#else
+            return .volumeAvailableCapacityForImportantUsageKey
+#endif
+        }()
+        guard let values = try? URL(fileURLWithPath: NSHomeDirectory()).resourceValues(forKeys: [key]) else { return 0 }
+#if os(tvOS)
+        return Int64(values.volumeAvailableCapacity ?? 0)
+#else
+        return values.volumeAvailableCapacityForImportantUsage ?? 0
+#endif
     }
 }
 

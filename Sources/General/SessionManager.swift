@@ -755,7 +755,7 @@ extension SessionManager {
     
     internal func updateProgress() {
         if isControlNetworkActivityIndicator {
-#if canImport(UIKit) && !os(visionOS)
+#if canImport(UIKit) && !os(visionOS) && !os(tvOS)
             DispatchQueue.tr.executeOnMain {
                 UIApplication.shared.isNetworkActivityIndicatorVisible = true
             }
@@ -785,7 +785,7 @@ extension SessionManager {
     
     internal func determineStatus(fromRunningTask: Bool) {
         if isControlNetworkActivityIndicator {
-#if canImport(UIKit) && !os(visionOS)
+#if canImport(UIKit) && !os(visionOS) && !os(tvOS)
             DispatchQueue.tr.executeOnMain {
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
